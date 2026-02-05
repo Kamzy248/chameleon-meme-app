@@ -14,7 +14,7 @@
     .container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; padding: 20px; }
     .card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
     .upload-box { border: 2px dashed #b0bec5; padding: 25px; text-align: center; border-radius: 12px; margin-bottom: 20px; }
-    input[type="file"], input[type="text"] { margin-top: 10px; padding: 8px; border-radius: 8px; border: 1px solid #ccc; }
+    input[type="file"], input[type="text"] { margin-top: 10px; padding: 8px; border-radius: 8px; border: 1px solid #ccc; width: 100%; }
     .gallery { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
     .meme-container { display: inline-block; width: 150px; text-align: center; }
     .meme-container img { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; }
@@ -103,12 +103,11 @@
       const messageText = chatInput.value.trim();
       if (!messageText) return;
       const username = usernameInput.value || "Guest";
-      const newMessage = { username, text: messageText, timestamp: Date.now() };
-      push(dbRef(database, "chat"), newMessage);
+      push(dbRef(database, "chat"), { username, text: messageText, timestamp: Date.now() });
       chatInput.value = "";
     }
 
-    onChildAdded(dbRef(database, "chat"), (snapshot) => {
+    onChildAdded(dbRef(database, "chat"), snapshot => {
       const msg = snapshot.val();
       const msgDiv = document.createElement("div");
       msgDiv.className = "message";
@@ -122,23 +121,24 @@
       const file = this.files[0];
       if (!file) return;
 
-      const storageReference = storageRef(storage, "memes/" + file.name);
+      // Add timestamp to filename to avoid collisions
+      const fileName = Date.now() + "-" + file.name;
+      const storageReference = storageRef(storage, "memes/" + fileName);
       const uploadTask = uploadBytesResumable(storageReference, file);
 
-      uploadTask.on('state_changed', null,
+      uploadTask.on('state_changed', 
+        null,
         (error) => console.error(error),
         () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            const memeData = { url, likes: 0 };
-            push(dbRef(database, "memes"), memeData);
+          getDownloadURL(uploadTask.snapshot.ref).then(url => {
+            push(dbRef(database, "memes"), { url, likes: 0 });
           });
         }
       );
     });
 
-    onChildAdded(dbRef(database, "memes"), (snapshot) => {
+    onChildAdded(dbRef(database, "memes"), snapshot => {
       const meme = snapshot.val();
-
       const container = document.createElement('div');
       container.className = "meme-container";
 
