@@ -169,58 +169,111 @@ footer {
 </div><footer>
   <p>© 2026 Chameleon - Share Your Colors</p>
 </footer><script>
+  <script type="module">
+  // ===== 1️⃣ Import Firebase modules =====
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getDatabase, ref as dbRef, push, onChildAdded, update, remove } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+  import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-storage.js";
+
+  // ===== 2️⃣ Firebase configuration =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyDoQutZxS6FRE0IBXAXuhugbvs-dcSKhlg",
+    authDomain: "chameleon-28641.firebaseapp.com",
+    projectId: "chameleon-28641",
+    storageBucket: "chameleon-28641.appspot.com",
+    messagingSenderId: "6315823905",
+    appId: "1:6315823905:web:2d1505a74704bdf8712460"
+  };
+
+  // ===== 3️⃣ Initialize Firebase =====
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+  const storage = getStorage(app);
+
+  // ===== 4️⃣ DOM Elements =====
   const imageUpload = document.getElementById('imageUpload');
   const gallery = document.getElementById('gallery');
-
-  function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const messages = document.getElementById('messages');
-imageUpload.addEventListener('change', function () {
-function sendMessage() {
-  const input = document.getElementById("chatInput");
+  const chatInput = document.getElementById("chatInput");
   const usernameInput = document.getElementById("usernameInput");
-  const messages = document.getElementById("messages");
+  const messagesDiv = document.getElementById("messages");
 
-  if (input.value.trim() === "") return;
+  // ===== 5️⃣ Chat =====
+  function sendMessage() {
+    const messageText = chatInput.value.trim();
+    if (!messageText) return;
 
-  const username = usernameInput.value || "Guest";
+    const username = usernameInput.value || "Guest";
 
-  const msg = document.createElement("div");
-  msg.className = "message";
-  msg.textContent = username + ": " + input.value;
-
-  messages.appendChild(msg);
-
-  input.value = "";
-  messages.scrollTop = messages.scrollHeight;
-}
-  const file = this.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = function (e) {
-
-    // CREATE CONTAINER
-    const container = document.createElement('div');
-    container.style.textAlign = "center";
-
-    // CREATE IMAGE
-    const img = document.createElement('img');
-    img.src = e.target.result;
-
-    // LIKE BUTTON
-    let likes = 0;
-    const likeBtn = document.createElement('button');
-    likeBtn.textContent = "❤️ 0";
-    likeBtn.style.margin = "5px";
-
-    likeBtn.onclick = function () {
-      likes++;
-      likeBtn.textContent = "❤️ " + likes;
+    const newMessage = {
+      username: username,
+      text: messageText,
+      timestamp: Date.now()
     };
 
-    // DELETE BUTTON
+    push(dbRef(database, "chat"), newMessage);
+    chatInput.value = "";
+  }
+
+  // Load chat messages
+  onChildAdded(dbRef(database, "chat"), (snapshot) => {
+    const msg = snapshot.val();
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "message";
+    msgDiv.textContent = msg.username + ": " + msg.text;
+    messagesDiv.appendChild(msgDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  });
+
+  // ===== 6️⃣ Meme Upload =====
+  imageUpload.addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const storageReference = storageRef(storage, "memes/" + file.name);
+    const uploadTask = uploadBytesResumable(storageReference, file);
+
+    uploadTask.on('state_changed', 
+      null, 
+      (error) => console.error(error),
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+          const memeData = { url: url, likes: 0 };
+          push(dbRef(database, "memes"), memeData);
+        });
+      }
+    );
+  });
+
+  // Load memes from Firebase
+  onChildAdded(dbRef(database, "memes"), (snapshot) => {
+    const meme = snapshot.val();
+
+    const container = document.createElement('div');
+    container.style.textAlign = "center";
+    container.style.marginBottom = "10px";
+
+    // Image
+    const img = document.createElement('img');
+    img.src = meme.url;
+    img.style.width = "100%";
+    img.style.borderRadius = "10px";
+    img.style.height = "150px";
+    img.style.objectFit = "cover";
+
+    // Like button
+    let likes = meme.likes;
+    const likeBtn = document.createElement('button');
+    likeBtn.textContent = "❤️ " + likes;
+    likeBtn.style.margin = "5px";
+    likeBtn.style.cursor = "pointer";
+
+    likeBtn.onclick = () => {
+      likes++;
+      likeBtn.textContent = "❤️ " + likes;
+      update(dbRef(database, "memes/" + snapshot.key), { likes: likes });
+    };
+
+    // Delete button
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = "Delete";
     deleteBtn.style.background = "#ff4d4d";
@@ -230,30 +283,17 @@ function sendMessage() {
     deleteBtn.style.borderRadius = "6px";
     deleteBtn.style.cursor = "pointer";
 
-    deleteBtn.onclick = function () {
+    deleteBtn.onclick = () => {
       container.remove();
+      remove(dbRef(database, "memes/" + snapshot.key));
     };
 
-    // ADD EVERYTHING TO CONTAINER
     container.appendChild(img);
     container.appendChild(likeBtn);
     container.appendChild(deleteBtn);
 
-    // ADD CONTAINER TO GALLERY
     gallery.appendChild(container);
-  };
-
-  reader.readAsDataURL(file);
-});
-    if (input.value.trim() === '') return;
-
-    const msg = document.createElement('div');
-    msg.className = 'message';
-    msg.textContent = input.value;
-
-    messages.appendChild(msg);
-    messages.scrollTop = messages.scrollHeight;
-    input.value = '';
-  }
-</script></body>
+  });
+</script>
+</body>
 </html>
