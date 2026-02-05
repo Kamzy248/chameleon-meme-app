@@ -1,299 +1,176 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chameleon</title>
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
-    }body {
-  margin: 0;
-  background: #eef1f5;
-  color: #333;
-}
-
-header {
-  background: linear-gradient(90deg, #00c6ff, #0072ff);
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 32px;
-  letter-spacing: 1px;
-}
-
-nav {
-  background: #1f2933;
-  padding: 10px;
-  text-align: center;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  margin: 0 15px;
-  font-size: 15px;
-}
-
-.container {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-  padding: 20px;
-}
-
-.card {
-  background: white;
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-}
-
-.upload-box {
-  border: 2px dashed #b0bec5;
-  padding: 25px;
-  text-align: center;
-  border-radius: 12px;
-  margin-bottom: 20px;
-}
-
-input[type="file"] {
-  margin-top: 10px;
-}
-
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
-  margin-top: 15px;
-}
-
-.gallery img {
-  width: 100%;
-  border-radius: 10px;
-  height: 150px;
-  object-fit: cover;
-}
-
-.chat-box {
-  display: flex;
-  flex-direction: column;
-  height: 450px;
-}
-
-.messages {
-  flex: 1;
-  overflow-y: auto;
-  background: #f4f6f8;
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-.message {
-  background: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  font-size: 14px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.chat-input {
-  display: flex;
-  gap: 8px;
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.chat-input button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 8px;
-  background: #0072ff;
-  color: white;
-  cursor: pointer;
-}
-
-footer {
-  background: #1f2933;
-  color: white;
-  text-align: center;
-  padding: 15px;
-  margin-top: 20px;
-}
-
-@media (max-width: 768px) {
-  .container {
-    grid-template-columns: 1fr;
-  }
-}
-
+    * { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+    body { margin: 0; background: #eef1f5; color: #333; }
+    header { background: linear-gradient(90deg, #00c6ff, #0072ff); color: white; padding: 20px; text-align: center; }
+    header h1 { margin: 0; font-size: 32px; letter-spacing: 1px; }
+    nav { background: #1f2933; padding: 10px; text-align: center; }
+    nav a { color: white; text-decoration: none; margin: 0 15px; font-size: 15px; }
+    .container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; padding: 20px; }
+    .card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+    .upload-box { border: 2px dashed #b0bec5; padding: 25px; text-align: center; border-radius: 12px; margin-bottom: 20px; }
+    input[type="file"], input[type="text"] { margin-top: 10px; padding: 8px; border-radius: 8px; border: 1px solid #ccc; }
+    .gallery { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
+    .meme-container { display: inline-block; width: 150px; text-align: center; }
+    .meme-container img { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; }
+    .meme-container button { margin: 3px 2px; cursor: pointer; border: none; border-radius: 6px; padding: 5px 8px; }
+    .like-btn { background: #ff7675; color: white; }
+    .delete-btn { background: #ff4d4d; color: white; }
+    .chat-box { display: flex; flex-direction: column; height: 450px; }
+    .messages { flex: 1; overflow-y: auto; background: #f4f6f8; padding: 10px; border-radius: 10px; margin-bottom: 10px; }
+    .message { background: white; padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .chat-input { display: flex; gap: 8px; }
+    .chat-input input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    .chat-input button { padding: 10px 15px; border: none; border-radius: 8px; background: #0072ff; color: white; cursor: pointer; }
+    footer { background: #1f2933; color: white; text-align: center; padding: 15px; margin-top: 20px; }
+    @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
   </style>
 </head>
-<body><header>
-  <h1>Chameleon</h1>
-  <p>Upload memes • Share • Chat • Connect</p>
-</header><nav>
-  <a href="#">Home</a>
-  <a href="#gallery">Gallery</a>
-  <a href="#chat">Chat</a>
-</nav><div class="container">
-  <!-- LEFT SIDE -->
-  <div class="card">
-    <h2>Upload Meme</h2>
-    <div class="upload-box">
-      <p>Select an image to upload</p>
-      <input type="file" id="imageUpload" accept="image/*">
-    </div><h3>Community Gallery</h3>
-<div class="gallery" id="gallery"></div>
+<body>
+  <header>
+    <h1>Chameleon</h1>
+    <p>Upload memes • Share • Chat • Connect</p>
+  </header>
 
-  </div>  <!-- RIGHT SIDE -->  <div class="card chat-box">
-    <h2>Community Chat</h2>
-<input type="text" id="usernameInput" placeholder="Your name..." style="margin-bottom:10px; padding:8px; border-radius:8px; border:1px solid #ccc;">
-    <div class="messages" id="messages"></div><div class="chat-input">
-  <input type="text" id="chatInput" placeholder="Type a message...">
-  <button onclick="sendMessage()">Send</button>
-</div>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#chat">Chat</a>
+  </nav>
 
+  <div class="container">
+    <!-- LEFT SIDE: Upload + Gallery -->
+    <div class="card">
+      <h2>Upload Meme</h2>
+      <div class="upload-box">
+        <p>Select an image to upload</p>
+        <input type="file" id="imageUpload" accept="image/*">
+      </div>
+      <h3>Community Gallery</h3>
+      <div class="gallery" id="gallery"></div>
+    </div>
+
+    <!-- RIGHT SIDE: Chat -->
+    <div class="card chat-box" id="chat">
+      <h2>Community Chat</h2>
+      <input type="text" id="usernameInput" placeholder="Your Name">
+      <div class="messages" id="messages"></div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
   </div>
-</div><footer>
-  <p>© 2026 Chameleon - Share Your Colors</p>
-</footer><script>
+
+  <footer>
+    <p>© 2026 Chameleon - Share Your Colors</p>
+  </footer>
+
+  <!-- Firebase Module Script -->
   <script type="module">
-  // ===== 1️⃣ Import Firebase modules =====
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getDatabase, ref as dbRef, push, onChildAdded, update, remove } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
-  import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-storage.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import { getDatabase, ref as dbRef, push, onChildAdded, update, remove } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-storage.js";
 
-  // ===== 2️⃣ Firebase configuration =====
-  const firebaseConfig = {
-    apiKey: "AIzaSyDoQutZxS6FRE0IBXAXuhugbvs-dcSKhlg",
-    authDomain: "chameleon-28641.firebaseapp.com",
-    projectId: "chameleon-28641",
-    storageBucket: "chameleon-28641.appspot.com",
-    messagingSenderId: "6315823905",
-    appId: "1:6315823905:web:2d1505a74704bdf8712460"
-  };
-
-  // ===== 3️⃣ Initialize Firebase =====
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-  const storage = getStorage(app);
-
-  // ===== 4️⃣ DOM Elements =====
-  const imageUpload = document.getElementById('imageUpload');
-  const gallery = document.getElementById('gallery');
-  const chatInput = document.getElementById("chatInput");
-  const usernameInput = document.getElementById("usernameInput");
-  const messagesDiv = document.getElementById("messages");
-
-  // ===== 5️⃣ Chat =====
-  function sendMessage() {
-    const messageText = chatInput.value.trim();
-    if (!messageText) return;
-
-    const username = usernameInput.value || "Guest";
-
-    const newMessage = {
-      username: username,
-      text: messageText,
-      timestamp: Date.now()
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDoQutZxS6FRE0IBXAXuhugbvs-dcSKhlg",
+      authDomain: "chameleon-28641.firebaseapp.com",
+      projectId: "chameleon-28641",
+      storageBucket: "chameleon-28641.appspot.com",
+      messagingSenderId: "6315823905",
+      appId: "1:6315823905:web:2d1505a74704bdf8712460"
     };
 
-    push(dbRef(database, "chat"), newMessage);
-    chatInput.value = "";
-  }
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const storage = getStorage(app);
 
-  // Load chat messages
-  onChildAdded(dbRef(database, "chat"), (snapshot) => {
-    const msg = snapshot.val();
-    const msgDiv = document.createElement("div");
-    msgDiv.className = "message";
-    msgDiv.textContent = msg.username + ": " + msg.text;
-    messagesDiv.appendChild(msgDiv);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  });
+    const imageUpload = document.getElementById('imageUpload');
+    const gallery = document.getElementById('gallery');
+    const chatInput = document.getElementById("chatInput");
+    const usernameInput = document.getElementById("usernameInput");
+    const messagesDiv = document.getElementById("messages");
 
-  // ===== 6️⃣ Meme Upload =====
-  imageUpload.addEventListener('change', function () {
-    const file = this.files[0];
-    if (!file) return;
+    // ===== Chat =====
+    function sendMessage() {
+      const messageText = chatInput.value.trim();
+      if (!messageText) return;
+      const username = usernameInput.value || "Guest";
+      const newMessage = { username, text: messageText, timestamp: Date.now() };
+      push(dbRef(database, "chat"), newMessage);
+      chatInput.value = "";
+    }
 
-    const storageReference = storageRef(storage, "memes/" + file.name);
-    const uploadTask = uploadBytesResumable(storageReference, file);
+    onChildAdded(dbRef(database, "chat"), (snapshot) => {
+      const msg = snapshot.val();
+      const msgDiv = document.createElement("div");
+      msgDiv.className = "message";
+      msgDiv.textContent = msg.username + ": " + msg.text;
+      messagesDiv.appendChild(msgDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
 
-    uploadTask.on('state_changed', 
-      null, 
-      (error) => console.error(error),
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          const memeData = { url: url, likes: 0 };
-          push(dbRef(database, "memes"), memeData);
-        });
-      }
-    );
-  });
+    // ===== Meme Upload =====
+    imageUpload.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
 
-  // Load memes from Firebase
-  onChildAdded(dbRef(database, "memes"), (snapshot) => {
-    const meme = snapshot.val();
+      const storageReference = storageRef(storage, "memes/" + file.name);
+      const uploadTask = uploadBytesResumable(storageReference, file);
 
-    const container = document.createElement('div');
-    container.style.textAlign = "center";
-    container.style.marginBottom = "10px";
+      uploadTask.on('state_changed', null,
+        (error) => console.error(error),
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            const memeData = { url, likes: 0 };
+            push(dbRef(database, "memes"), memeData);
+          });
+        }
+      );
+    });
 
-    // Image
-    const img = document.createElement('img');
-    img.src = meme.url;
-    img.style.width = "100%";
-    img.style.borderRadius = "10px";
-    img.style.height = "150px";
-    img.style.objectFit = "cover";
+    onChildAdded(dbRef(database, "memes"), (snapshot) => {
+      const meme = snapshot.val();
 
-    // Like button
-    let likes = meme.likes;
-    const likeBtn = document.createElement('button');
-    likeBtn.textContent = "❤️ " + likes;
-    likeBtn.style.margin = "5px";
-    likeBtn.style.cursor = "pointer";
+      const container = document.createElement('div');
+      container.className = "meme-container";
 
-    likeBtn.onclick = () => {
-      likes++;
+      const img = document.createElement('img');
+      img.src = meme.url;
+
+      // Like button
+      let likes = meme.likes;
+      const likeBtn = document.createElement('button');
       likeBtn.textContent = "❤️ " + likes;
-      update(dbRef(database, "memes/" + snapshot.key), { likes: likes });
-    };
+      likeBtn.className = "like-btn";
+      likeBtn.onclick = () => {
+        likes++;
+        likeBtn.textContent = "❤️ " + likes;
+        update(dbRef(database, "memes/" + snapshot.key), { likes });
+      };
 
-    // Delete button
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = "Delete";
-    deleteBtn.style.background = "#ff4d4d";
-    deleteBtn.style.color = "white";
-    deleteBtn.style.border = "none";
-    deleteBtn.style.padding = "5px 8px";
-    deleteBtn.style.borderRadius = "6px";
-    deleteBtn.style.cursor = "pointer";
+      // Delete button
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = "Delete";
+      deleteBtn.className = "delete-btn";
+      deleteBtn.onclick = () => {
+        container.remove();
+        remove(dbRef(database, "memes/" + snapshot.key));
+      };
 
-    deleteBtn.onclick = () => {
-      container.remove();
-      remove(dbRef(database, "memes/" + snapshot.key));
-    };
+      container.appendChild(img);
+      container.appendChild(likeBtn);
+      container.appendChild(deleteBtn);
 
-    container.appendChild(img);
-    container.appendChild(likeBtn);
-    container.appendChild(deleteBtn);
-
-    gallery.appendChild(container);
-  });
-</script>
+      gallery.appendChild(container);
+    });
+  </script>
 </body>
 </html>
